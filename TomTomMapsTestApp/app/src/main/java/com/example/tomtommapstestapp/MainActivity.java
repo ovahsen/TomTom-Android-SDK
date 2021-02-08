@@ -18,7 +18,9 @@ import android.widget.TextView;
 import com.google.common.collect.ImmutableList;
 import com.tomtom.online.sdk.common.location.LatLng;
 import com.tomtom.online.sdk.map.Icon;
+import com.tomtom.online.sdk.map.ApiKeyType;
 import com.tomtom.online.sdk.map.MapFragment;
+import com.tomtom.online.sdk.map.MapProperties;
 import com.tomtom.online.sdk.map.MarkerAnchor;
 import com.tomtom.online.sdk.map.MarkerBuilder;
 import com.tomtom.online.sdk.map.OnMapReadyCallback;
@@ -34,6 +36,9 @@ import com.tomtom.online.sdk.search.data.fuzzy.FuzzySearchResult;
 import com.tomtom.online.sdk.search.extensions.SearchService;
 import com.tomtom.online.sdk.search.extensions.SearchServiceConnectionCallback;
 import com.tomtom.online.sdk.search.extensions.SearchServiceManager;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -80,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Log.d(TAG, "starting");
 
+        initTomTomServices();
+
         EditText searchEditText = findViewById(R.id.searchText);
         searchEditText.setOnEditorActionListener((v, actionId, event) -> {
             LatLng mapCenter = tomtomMap.getCenterOfMap();
@@ -105,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         Log.d(TAG, "Requesting search service");
+
+        // To use the search API with the SearchServiceManager, you need to specify the API KEY in the AndroidManifest.xml
         ServiceConnection serviceConnection = SearchServiceManager.createAndBind(getBaseContext(),
                 new SearchServiceConnectionCallback() {
                     @Override
@@ -128,18 +137,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Log.d(TAG, "Retrieving map fragment");
-        MapFragment mapFragment = (MapFragment)getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-        Log.d(TAG, "Request map from map fragment");
-        mapFragment.getAsyncMap(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(@NonNull TomtomMap map) {
-                Log.d(TAG, "Map retrieved");
-                tomtomMap = map;
-                tomtomMap.setMyLocationEnabled(true);;
-                tomtomMap.centerOn(37, -121, 8);
-            }
-        });
+
     }
 
     void showSearchResults(ImmutableList<FuzzySearchResult> resultList)
@@ -161,5 +159,37 @@ public class MainActivity extends AppCompatActivity {
                     .decal(true);
             tomtomMap.addMarker(markerBuilder);
         }
+    }
+
+    private void initTomTomServices() {
+        Map<ApiKeyType, String> mapKeys = new HashMap<>();
+        mapKeys.put(ApiKeyType.MAPS_API_KEY, "Your MAP API KEY");
+
+        MapProperties mapProperties = new MapProperties.Builder()
+                .keys(mapKeys)
+                .build();
+
+        Log.d(TAG, "Creating map fragment");
+        MapFragment mapFragment = MapFragment.newInstance(mapProperties);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.map_fragment, mapFragment)
+                .commit();
+
+        Log.d(TAG, "Request map from map fragment");
+        mapFragment.getAsyncMap(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(@NonNull TomtomMap map) {
+                Log.d(TAG, "Map retrieved");
+                tomtomMap = map;
+                tomtomMap.setMyLocationEnabled(true);;
+                tomtomMap.centerOn(37, -121, 8);
+            }
+        });
+
+
+
+
+
     }
 }
