@@ -9,13 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <meta-data android:name="OnlineMaps.Key" android:value="YOUR_APP_KEY_HERE" />
-        <meta-data android:name="OnlineSearch.Key" android:value="YOUR_APP_KEY_HERE" />
-        <!--
-        <meta-data android:name="OnlineTraffic.Key" android:value="YOUR_APP_KEY_HERE" />
-        <meta-data android:name="OnlineRouting.Key" android:value="YOUR_APP_KEY_HERE" />
-        <meta-data android:name="GeofencingApi.Key" android:value="YOUR_APP_KEY_HERE" />
-        -->
+        <meta-data
+            android:name="OnlineSearch.Key"
+            android:value="YOUR SEARCH API KEY" />
+
         <activity android:name=".MainActivity"
             android:resizeableActivity="true">
             <intent-filter>
